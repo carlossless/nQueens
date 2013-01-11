@@ -1,6 +1,3 @@
-//Karolis Stasaitis IF-1/7
-//7 Uzdavinys: Valdoves
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <SDL/SDL.h>
@@ -11,8 +8,8 @@ SDL_Surface* screen = NULL;
 SDL_Surface* queen = NULL;
 
 void print_barrier(int);
-void solve(int, int, int*);
 void print_board(int, int*);
+void solve(int, int, int*);
 
 int main(int argc, char* args[])
 {
