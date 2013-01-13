@@ -8,6 +8,6 @@ Building nQueens
 
 Make sure you have SDL, SDL_image and SDL_ttf installed (http://www.libsdl.org/). If you have them just run:
 
-	$ g++ -o nQueens main.cpp `sdl-config --cflags --libs` -lSDL_image -lSDL_ttf -D PRNT_STEPS
+	$ gcc -std=c99 -o nQueens main.c `sdl-config --cflags --libs` -lSDL_image -lSDL_ttf -D PRNT_STEPS
 	
 Have fun!
