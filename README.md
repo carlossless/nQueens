@@ -6,8 +6,8 @@ This little application was made to solve the n-queen problem. By using SDL it v
 Building nQueens
 -------------
 
-Make sure you have both SDL and SDL_image (http://www.libsdl.org/). If you have them just run:
+Make sure you have SDL, SDL_image and SDL_ttf installed (http://www.libsdl.org/). If you have them just run:
 
-	$ g++ -o nQueens main.cpp `sdl-config --cflags --libs` -lSDL_image
+	$ g++ -o nQueens main.cpp `sdl-config --cflags --libs` -lSDL_image -lSDL_ttf -D PRNT_STEPS
 	
 Have fun!
