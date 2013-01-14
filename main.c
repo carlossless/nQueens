@@ -11,29 +11,36 @@ SDL_Surface *bqueen = NULL, *wqueen = NULL;
 TTF_Font *font = NULL;
 SDL_Surface *info = NULL;
 
+Uint32 blackColor, whiteColor;
+
 int quit = 0;
 
 int init(int,int);
 int deinit();
 //void print_barrier(int);
 void print_info(char*, int, int);
+void poll_sdl();
 void print_board(int, int*);
 void solve(int, int, int*);
 
 int main(int argc, char* args[])
 {
-    int n = 8, fullscreen = 0;
+    int n = 8, fullScreen = 0;
     if (argc > 1) {
         n = atoi(args[1]);
         if (argc > 2)
-            fullscreen = atoi(args[2]);
+            fullScreen = atoi(args[2]);
     }
         
     int queens[n];
     
-    if (init(n,fullscreen) == 0)
+    if (init(n,fullScreen) == 0)
     {
         solve(n, 0, queens);
+        while (!quit) {
+        	print_info("Done!",-23+n*16,8);
+        	poll_sdl();
+        }
         deinit();
         return 0;
     }
@@ -41,7 +48,7 @@ int main(int argc, char* args[])
     return 1;
 }
 
-int init(int n, int fullscreen)
+int init(int n, int fullScreen)
 {
 
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
@@ -50,7 +57,7 @@ int init(int n, int fullscreen)
         return 1;    
     }
     
-    screen = SDL_SetVideoMode( 16*(n+1),16*(n+2),32,SDL_HWSURFACE | SDL_DOUBLEBUF | (fullscreen ? SDL_FULLSCREEN : 0));
+    screen = SDL_SetVideoMode(16*(n+1),16*(n+2),32,SDL_SWSURFACE  | (fullScreen ? SDL_FULLSCREEN : 0));
     if (screen == NULL)
     {
         fprintf(stderr, "Screen could not init\r\n");
@@ -77,6 +84,9 @@ int init(int n, int fullscreen)
         fprintf(stderr, "Font couldn't be loaded\r\n");
         return 4;
     }
+
+    blackColor = SDL_MapRGB(screen->format,0x00,0x00,0x00);
+    whiteColor = SDL_MapRGB(screen->format,0xFF,0xFF,0xFF);
 
     SDL_WM_SetCaption("nQueens", NULL);
     SDL_WM_SetIcon(IMG_Load("bqueen.png"), NULL);
@@ -113,8 +123,10 @@ void print_info(char* text, int x, int y)
     SDL_BlitSurface(info, NULL, screen, &block);
 }
 
-void print_board(int n, int *queens)
+void poll_sdl()
 {
+    SDL_Flip(screen);
+
     SDL_Event event;
     while ( SDL_PollEvent(&event) ) {
         switch (event.type) {
@@ -126,10 +138,15 @@ void print_board(int n, int *queens)
                 break;
         }
     }
+}
 
+void print_board(int n, int *queens)
+{
+    poll_sdl();
+    
     char string_buffer[50];
 
-    SDL_FillRect(screen, NULL, 0xFF000000);
+    SDL_FillRect(screen, NULL, blackColor);
 
     //printf("\nNr %d:\n", step_count);
     //for (int y = 0; y < n; y++)
@@ -147,14 +164,14 @@ void print_board(int n, int *queens)
         for (int j = 0; j < n; j++) {
             SDL_Rect block = {(16*j)+8,(16*i)+24,16,16 };
             //printf("|%c",i == queens[j] ? 'Q' : ((i + j) & 1) ? ' ' : '#');
-            SDL_FillRect(screen, &block, ((i + j) & 1) ? 0xFF000000 : 0xFFFFFFFF);
+            SDL_FillRect(screen, &block, ((i + j) & 1) ? blackColor : whiteColor);
             if (i == queens[j]) SDL_BlitSurface(((i + j) & 1) ? wqueen : bqueen, NULL, screen, &block);
         }
         //printf("|\n");
     }
     //print_barrier(n);
 
-    SDL_Flip(screen);
+	poll_sdl();
 
     //sprintf(string_buffer,"queens-%d.bmp",count);
     //SDL_SaveBMP(screen,filename);
@@ -171,19 +188,17 @@ void solve(int n, int col, int *queens)
         return;
     }
  
-    for (int i = 0, j = 0; i < n; i++) {
-        for (j = 0; j < col && !(queens[j] == i || abs(queens[j] - i) == col - j); j++);
+    for (int i = 0, j = 0; i < n && !quit; i++) {
+        for (j = 0; j < col && !(queens[j] == i || abs(queens[j] - i) == col - j) && !quit; j++, step_count++);
         
         if (j < col) continue;
         
         for (int y=col; y<n; y++) 
             queens[y] = -1;
-            
-        step_count++;
 
-#ifdef PRNT_STEPS
-        print_board(n,queens);
-#endif
+// #ifdef PRNT_STEPS
+//         print_board(n,queens);
+// #endif
         
         queens[col] = i;
         solve(n, col + 1, queens);
