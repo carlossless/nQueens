@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "SDL/SDL.h"
-#include "SDL/SDL_ttf.h"
-#include "SDL/SDL_image.h"
+#include <SDL/SDL.h>
+#include <SDL/SDL_ttf.h>
+#include <SDL/SDL_image.h>
 
 int solved_count = 0, step_count = 0;
 SDL_Surface *screen = NULL;
@@ -32,11 +32,13 @@ int main(int argc, char* args[])
     int queens[n];
     
     if (init(n,fullscreen) == 0)
+    {
         solve(n, 0, queens);
+        deinit();
+        return 0
+    }
     
-    deinit();
-    
-    return 0;
+    return 1;
 }
 
 int init(int n, int fullscreen)
@@ -45,35 +47,35 @@ int init(int n, int fullscreen)
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
     {
         fprintf(stderr, "SDL could not init\r\n");
-        return -1;    
+        return 1;    
     }
     
     screen = SDL_SetVideoMode( 16*(n+1),16*(n+2),32,SDL_HWSURFACE | SDL_DOUBLEBUF | (fullscreen ? SDL_FULLSCREEN : 0));
     if (screen == NULL)
     {
         fprintf(stderr, "Screen could not init\r\n");
-        return -2;
+        return 1;
     }
 
     if (TTF_Init() < 0)
     {
         fprintf(stderr, "SDL_ttf could not init\r\n");
-        return -3;
+        return 2;
     }
 
     wqueen = IMG_Load("wqueen.png");
     bqueen = IMG_Load("bqueen.png");
     if (wqueen == NULL || bqueen == NULL)
     {
-        fprintf(stderr, "Queen image could not be loaded\r\n");
-        return -4;
+        fprintf(stderr, "Queen images could not be loaded\r\n");
+        return 3;
     }
     
     font = TTF_OpenFont("visitor1.ttf",10);
     if (font == NULL)
     {
         fprintf(stderr, "Font couldn't be loaded\r\n");
-        return -5;
+        return 4;
     }
 
     SDL_WM_SetCaption("nQueens", NULL);
