@@ -35,7 +35,7 @@ int main(int argc, char* args[])
     {
         solve(n, 0, queens);
         deinit();
-        return 0
+        return 0;
     }
     
     return 1;
@@ -150,7 +150,7 @@ void print_board(int n, int *queens)
             SDL_FillRect(screen, &block, ((i + j) & 1) ? 0xFF000000 : 0xFFFFFFFF);
             if (i == queens[j]) SDL_BlitSurface(((i + j) & 1) ? wqueen : bqueen, NULL, screen, &block);
         }
-        printf("|\n");
+        //printf("|\n");
     }
     //print_barrier(n);
 
@@ -189,4 +189,3 @@ void solve(int n, int col, int *queens)
         solve(n, col + 1, queens);
     }
 }
->>>>>>> fb313111089eb7f3113fd61a6bf732848a84d94f
